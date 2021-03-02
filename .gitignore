@@ -1,2 +1,11 @@
+# Stack Files and Folders
+
 .stack-work/
+
+# Editor Files and Folders
+
 *~
+
+# Binaries
+
+wolfram
