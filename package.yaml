@@ -1,0 +1,47 @@
+name:                Wolfram
+version:             0.1.0.0
+github:              "EpitechIT2020/B-FUN-400-PAR-4-1-wolfram-benjamin.reigner"
+license:             BSD3
+author:              "Benjamin Reigner"
+maintainer:          "benjamin.reigner@epitech.eu"
+copyright:           "2021 Benjamin Reigner"
+
+extra-source-files:
+- README.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/EpitechIT2020/B-FUN-400-PAR-4-1-wolfram-benjamin.reigner>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  wolfram:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Wolfram
+
+tests:
+  unit_test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - Wolfram
