@@ -95,7 +95,7 @@ parseArgs ("--window":x:xs) = case readPositiveInt x of
 parseArgs ("--move":x:xs) = case readMaybe x of
     Just nb -> do
         conf <- parseArgs xs
-        Right conf {rule = nb}
+        Right conf {move = nb}
     Nothing -> Left ("Invalid Argument: " ++ x)
 parseArgs (x:xs) = Left ("Invalid Argument: " ++ x)
 
@@ -117,5 +117,7 @@ main = do
             checkConfigValues conf
             let initialLine = initLine w
             let firstLine = placeInitStar initialLine ((w `div` 2) + m)
-            algorithm conf {line = l - 1} firstLine
+            if l /= -1 then
+                algorithm conf {line = l - 1} firstLine
+                else algorithm conf firstLine
         Left str -> putStrLn str >> exitWith (ExitFailure 84)
