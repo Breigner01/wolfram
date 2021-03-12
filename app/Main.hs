@@ -48,16 +48,22 @@ generateNextLine ('*':'*':'*':str) rule = case testBit rule 7 of
     False -> ' ' : generateNextLine ('*':'*':str) rule
 generateNextLine (a:b:[]) _ = ""
 
+dispLine :: String -> Config -> IO ()
+dispLine str conf@(Config r s l w m) =
+    putStrLn (take w (drop (toRemove) str))
+    where
+        toRemove = ((length str) - w) `div` 2
+
 algorithm :: Config -> String -> IO ()
-algorithm conf@(Config r s 0 w m) str = putStrLn str
+algorithm conf@(Config r s 0 w m) str = dispLine str conf
 algorithm conf@(Config r s (-1) w m) str =
-    putStrLn str >>
-    algorithm conf (generateNextLine (' ' : str ++ " ") r)
+    dispLine str conf >>
+    algorithm conf (generateNextLine (' ' : ' ' : str ++ "  ") r)
 algorithm conf@(Config r 0 l w m) str =
-    putStrLn str >>
-    algorithm (conf {line = l - 1}) (generateNextLine (' ' : str ++ " ") r)
+    dispLine str conf >>
+    algorithm (conf {line = l - 1}) (generateNextLine (' ' : ' ' : str ++ "  ") r)
 algorithm conf@(Config r s l w m) str =
-    algorithm (conf {start = s - 1}) (generateNextLine (' ' : str ++ " ") r)
+    algorithm (conf {start = s - 1}) (generateNextLine (' ' : ' ' : str ++ "  ") r)
 
 readPositiveInt :: String -> Maybe Int
 readPositiveInt s = do
@@ -106,7 +112,7 @@ checkConfigValues conf@(Config r s l w m) = if r < 0 || r > 255 then
 setConf :: Config -> Config
 setConf conf@(Config r s (-1) w m) = conf
 setConf conf@(Config r 0 l w m) = conf {line = l - 1}
-setConf conf@(Config r s l w m) = conf {start = s - 1}
+setConf conf@(Config r s l w m) = conf {line = l - 1}
 
 main :: IO ()
 main = do
