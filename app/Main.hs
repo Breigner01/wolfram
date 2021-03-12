@@ -17,9 +17,9 @@ data Config = Config {
 defaultConf :: Config
 defaultConf = Config {rule = -1, start = 0, line = -1, window = 80, move = 0}
 
-initLine :: Int -> String
-initLine 0 = ""
-initLine nb = ' ' : initLine (nb - 1)
+initLine :: Config -> String
+initLine conf@(Config r s l 0 m) = ""
+initLine conf@(Config r s l w m) = ' ' : initLine (conf {window = w - 1})
 
 generateNextLine :: String -> Int -> String
 generateNextLine (' ':' ':' ':str) rule = case testBit rule 0 of
@@ -50,19 +50,14 @@ generateNextLine (a:b:[]) _ = ""
 
 algorithm :: Config -> String -> IO ()
 algorithm conf@(Config r s 0 w m) str = putStrLn str
-algorithm conf@(Config r s (-1) w m) str = do
-    let line = generateNextLine (' ' : str ++ " ") r
-    putStrLn str
-    algorithm conf line
-algorithm conf@(Config r 0 l w m) str = do
-    let confs = conf {line = l - 1}
-    let line = generateNextLine (' ' : str ++ " ") r
-    putStrLn str
-    algorithm confs line
-algorithm conf@(Config r s l w m) str = do
-    let confs = conf {start = s - 1}
-    let line = generateNextLine (' ' : str ++ " ") r
-    algorithm confs line
+algorithm conf@(Config r s (-1) w m) str =
+    putStrLn str >>
+    algorithm conf (generateNextLine (' ' : str ++ " ") r)
+algorithm conf@(Config r 0 l w m) str =
+    putStrLn str >>
+    algorithm (conf {line = l - 1}) (generateNextLine (' ' : str ++ " ") r)
+algorithm conf@(Config r s l w m) str =
+    algorithm (conf {start = s - 1}) (generateNextLine (' ' : str ++ " ") r)
 
 readPositiveInt :: String -> Maybe Int
 readPositiveInt s = do
@@ -106,18 +101,21 @@ placeInitStar (c:str) i = c : placeInitStar str (i - 1)
 checkConfigValues :: Config -> IO ()
 checkConfigValues conf@(Config r s l w m) = if r < 0 || r > 255 then
     putStr "Invalid value for rule: " >> print r >> exitWith (ExitFailure 84)
-    else
-        putStr ""
+    else putStr ""
+
+setConf :: Config -> Config
+setConf conf@(Config r s (-1) w m) = conf
+setConf conf@(Config r 0 l w m) = conf {line = l - 1}
+setConf conf@(Config r s l w m) = conf {start = s - 1}
 
 main :: IO ()
 main = do
     args <- getArgs
     case parseArgs args of
-        Right conf@(Config r s l w m) -> do
-            checkConfigValues conf
-            let initialLine = initLine w
-            let firstLine = placeInitStar initialLine ((w `div` 2) + m)
-            if l /= -1 then
-                algorithm conf {line = l - 1} firstLine
-                else algorithm conf firstLine
+        Right conf@(Config r s l w m) ->
+            checkConfigValues conf >>
+            algorithm (setConf conf) firstLine
+            where
+                firstLine = placeInitStar initialLine ((w `div` 2) + m)
+                initialLine = initLine conf
         Left str -> putStrLn str >> exitWith (ExitFailure 84)
