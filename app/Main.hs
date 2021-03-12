@@ -111,7 +111,6 @@ checkConfigValues conf@(Config r s l w m) = if r < 0 || r > 255 then
 
 setConf :: Config -> Config
 setConf conf@(Config r s (-1) w m) = conf
-setConf conf@(Config r 0 l w m) = conf {line = l - 1}
 setConf conf@(Config r s l w m) = conf {line = l - 1}
 
 main :: IO ()
