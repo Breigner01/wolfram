@@ -61,9 +61,9 @@ algorithm conf@(Config r s (-1) w m) str =
     algorithm conf (generateNextLine (' ' : ' ' : str ++ "  ") r)
 algorithm conf@(Config r 0 l w m) str =
     dispLine str conf >>
-    algorithm (conf {line = l - 1}) (generateNextLine (' ' : ' ' : str ++ "  ") r)
+    algorithm (conf {line = l - 1}) (generateNextLine (' ':' ':str ++ "  ") r)
 algorithm conf@(Config r s l w m) str =
-    algorithm (conf {start = s - 1}) (generateNextLine (' ' : ' ' : str ++ "  ") r)
+    algorithm (conf {start = s - 1}) (generateNextLine (' ':' ':str ++ "  ") r)
 
 readPositiveInt :: String -> Maybe Int
 readPositiveInt s = do
